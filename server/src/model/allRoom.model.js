@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const AllRooms = new mongoose.Schema({
+const AllRooms = new mongoose.Schema ({
     allrooms: [
         {
             type: mongoose.Schema.Types.ObjectId,

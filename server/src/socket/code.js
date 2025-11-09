@@ -1,27 +1,37 @@
 export default function handleCodeEvents(io , socket)
 {
     socket.on('code-change' , code => {
-
-        socket.broadcast.to(socket.room).emit('code-update' , code) ;
-
+        if (socket.room) {
+            socket.broadcast.to(socket.room).emit('code-update' , code) ;
+        }
     }) ;
 
     socket.on('user-join' ,  data => {
+        if (!socket.room) {
+            return;
+        }
 
-        const room = io.sockets.adapters.rooms.get(socket.room) ; 
-        const lastPerson = [...room].pop() ; 
-        io.to(lastPerson).emit('accept-info' , data) ; 
-            
+        const room = io.sockets.adapter.rooms.get(socket.room) ; 
+        
+        if (room && room.size > 0) {
+            const roomArray = Array.from(room);
+            if (roomArray.length > 0) {
+                const lastPerson = roomArray[roomArray.length - 1];
+                io.to(lastPerson).emit('accept-info' , data) ; 
+            }
+        }
     }) ;
 
     socket.on('language-change' , lang => {
-        io.sockets.in(socket.room).emit('language-update' , lang) ; 
-
+        if (socket.room) {
+            io.sockets.in(socket.room).emit('language-update' , lang) ; 
+        }
     }) ; 
 
-    socket.on('tittle-change' , tittle => {
-        io.sockets.in(socket.room).emity("title-update" , title ) ;
-
+    socket.on('title-change' , title => {
+        if (socket.room) {
+            io.sockets.in(socket.room).emit("title-update" , title ) ;
+        }
     }) ;
 
 

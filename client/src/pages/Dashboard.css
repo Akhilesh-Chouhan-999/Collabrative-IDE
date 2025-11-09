@@ -1,0 +1,244 @@
+.dashboard-container {
+  min-height: 100vh;
+  background: #f7fafc;
+}
+
+.dashboard-header {
+  background: white;
+  padding: 20px 40px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-header h1 {
+  font-size: 24px;
+  color: #1a202c;
+  margin: 0;
+}
+
+.logout-button {
+  padding: 8px 16px;
+  background: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.logout-button:hover {
+  background: #c53030;
+}
+
+.dashboard-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px;
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.action-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.create-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.join-button {
+  background: #48bb78;
+  color: white;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.rooms-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.rooms-column h2 {
+  font-size: 20px;
+  color: #2d3748;
+  margin-bottom: 20px;
+}
+
+.rooms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.room-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.room-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.room-card h3 {
+  font-size: 18px;
+  color: #1a202c;
+  margin-bottom: 8px;
+}
+
+.room-language {
+  color: #667eea;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.room-code {
+  color: #718096;
+  font-size: 12px;
+}
+
+.empty-state {
+  text-align: center;
+  color: #a0aec0;
+  padding: 40px;
+  background: white;
+  border-radius: 12px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #718096;
+}
+
+.error-message {
+  background: #fed7d7;
+  color: #c53030;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 32px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h2 {
+  margin-bottom: 24px;
+  color: #1a202c;
+}
+
+.modal-content .form-group {
+  margin-bottom: 20px;
+}
+
+.modal-content .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.modal-content .form-group input,
+.modal-content .form-group select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 16px;
+  outline: none;
+}
+
+.modal-content .form-group input:focus,
+.modal-content .form-group select:focus {
+  border-color: #667eea;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.modal-actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.modal-actions button[type="button"] {
+  background: #e2e8f0;
+  color: #2d3748;
+}
+
+.modal-actions button[type="button"]:hover {
+  background: #cbd5e0;
+}
+
+.modal-actions button[type="submit"] {
+  background: #667eea;
+  color: white;
+}
+
+.modal-actions button[type="submit"]:hover {
+  background: #5568d3;
+}
+
+@media (max-width: 768px) {
+  .rooms-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-content {
+    padding: 20px;
+  }
+}
+

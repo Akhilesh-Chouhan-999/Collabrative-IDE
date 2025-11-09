@@ -32,7 +32,7 @@ export default function handleRoomEvents(io , socket)
 
         socket.emit('receive-message' , {
             sender : 'admin' , 
-            test : `${msg.nameOfUser} has joined!`
+            text : `${msg.nameOfUser} has joined!`
         }) ;
 
         socket.broadcast.to(socket.room).emit('receive-message' , 

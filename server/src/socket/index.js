@@ -9,8 +9,9 @@ export default function setupSocket(httpServer)
      const io = new Server(httpServer, {
 
     cors: {
-      origin: "http://localhost:3000",
+      origin: ["http://localhost:5173", "http://localhost:3000"],
       methods: ["GET", "POST"],
+      credentials: true,
     },
   });
 

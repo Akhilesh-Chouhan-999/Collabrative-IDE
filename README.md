@@ -1,189 +1,278 @@
 # Multi-Collab IDE
 
-A real-time collaborative code editor built with React, Node.js, Express, Socket.io, and MongoDB.
+A real-time collaborative code editor built with React, Node.js, Express, Socket.io, and MongoDB. Multiple users can code together in shared rooms with live synchronization, chat, code execution, and AI-powered recommendations.
 
 ## Features
 
-- 🔐 User Authentication (Register/Login)
-- 🏠 Dashboard to manage rooms
-- 👥 Create and join coding rooms
-- 💻 **Advanced Code Editor** with Monaco Editor (VS Code editor)
-  - Auto-complete and IntelliSense
-  - Bracket matching and auto-closing
-  - Syntax highlighting
-  - Code formatting
-  - Multiple language support
-- ▶️ **Code Execution** - Run code directly in the editor
-  - Supports JavaScript, Python, Java, C, C++
-  - Real-time output display
-- 🤖 **AI Recommendations** - Get AI-powered code suggestions
-  - Code quality improvements
-  - Best practices
-  - Bug detection
-  - Performance optimizations
-- 💬 Real-time chat functionality
-- 🔄 Live code synchronization
+### Authentication & Sessions
+
+- User registration and login with JWT-based authentication
+- HTTP-only cookie tokens for security
+- Persistent sessions — stay logged in across page refreshes
+- Protected routes with automatic redirects
+
+### Dashboard
+
+- User profile with avatar and stats (rooms created, rooms joined)
+- Create new rooms with a name and language
+- Join existing rooms by room code
+- Room cards showing language, participants, and admin info
+- Copy room code to clipboard
+- Delete rooms (admin only, with confirmation)
+
+### Collaborative Code Editor
+
+- **Monaco Editor** (VS Code engine) with full IntelliSense
+- Real-time code synchronization across all participants
+- Live language switching (JavaScript, Python, Java, C, C++, HTML, CSS)
+- **Typing indicators** — see who is currently editing
+- **Online users panel** — see who is in the room
+- Code templates — quickly load starter code for any language
+- Theme toggle (dark / light)
+- Adjustable font size (10–24px)
+- Download code as a file with correct extension
+- Copy room code to clipboard
+
+### Code Execution
+
+- Run code directly from the editor
+- Supports **JavaScript, Python, Java, C, C++**
+- Real-time output display with clear button
+- 10-second execution timeout for safety
+- Temporary file isolation and cleanup
+
+### AI Recommendations
+
+- AI-powered code analysis using OpenAI GPT-3.5-turbo
+- Categorized suggestions: info, tips, warnings, errors
+- Code quality, best practices, bug detection, performance
+- Graceful fallback to basic tips when no API key is configured
+
+### Real-time Chat
+
+- In-room chat with message timestamps
+- System messages for join/leave events
+- Own messages highlighted
+- Message count display
+- Auto-scroll to latest messages
+
+### Notifications
+
+- Toast notifications for key events (join, leave, copy, errors)
+- Leave room confirmation dialog
 
 ## Prerequisites
 
-- Node.js (v14 or higher)
+- Node.js (v16 or higher)
 - MongoDB (local or MongoDB Atlas)
 - npm or yarn
 
+**For code execution, install the relevant compilers/interpreters:**
+
+| Language   | Requirement | Command          |
+| ---------- | ----------- | ---------------- |
+| JavaScript | Node.js     | `node`           |
+| Python     | Python 3    | `python`         |
+| Java       | JDK         | `javac` + `java` |
+| C          | GCC         | `gcc`            |
+| C++        | G++         | `g++`            |
+
 ## Installation
 
-### Backend Setup
+### Backend
 
-1. Navigate to the server directory:
 ```bash
 cd Collabrative-IDE/server
-```
-
-2. Install dependencies:
-```bash
 npm install
 ```
 
-3. Create a `.env` file in the server directory:
+Create a `.env` file in the `server/` directory:
+
 ```env
 PORT=5000
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
-OPENAI_API_KEY=your_openai_api_key_optional
+CLIENT_URL=http://localhost:5173
+OPENAI_API_KEY=your_openai_api_key  # optional
 ```
 
-**Note:** `OPENAI_API_KEY` is optional. If not provided, AI recommendations will show a message to configure it. Code execution works without it.
+Start the server:
 
-4. Start the server:
 ```bash
 npm run dev
 ```
 
-The server will run on `http://localhost:5000`
+The server runs on `http://localhost:5000`.
 
-### Frontend Setup
+### Frontend
 
-1. Navigate to the client directory:
 ```bash
 cd Collabrative-IDE/client
-```
-
-2. Install dependencies:
-```bash
 npm install
 ```
 
-3. (Optional) Create a `.env` file in the client directory:
+(Optional) Create a `.env` file in the `client/` directory:
+
 ```env
 VITE_API_URL=http://localhost:5000
 ```
 
-4. Start the development server:
+Start the development server:
+
 ```bash
 npm run dev
 ```
 
-The frontend will run on `http://localhost:5173`
+The frontend runs on `http://localhost:5173`.
 
 ## Usage
 
-1. Start both the backend and frontend servers
-2. Open your browser and navigate to `http://localhost:5173`
-3. Register a new account or login with existing credentials
-4. Create a new room or join an existing room using the room code
-5. Start coding collaboratively with real-time synchronization!
+1. Start both backend and frontend servers
+2. Open `http://localhost:5173` in your browser
+3. Register a new account or log in
+4. Create a new room or join one with a room code
+5. Share the room code with collaborators
+6. Code together with live sync, chat, and AI recommendations
 
 ## Project Structure
 
 ```
 Collabrative-IDE/
-├── client/                 # React frontend
+├── client/                     # React frontend (Vite)
 │   ├── src/
-│   │   ├── pages/         # Page components
-│   │   ├── context/       # React context (Auth)
-│   │   ├── services/      # API service layer
-│   │   └── App.jsx        # Main app component
+│   │   ├── context/            # AuthContext (session management)
+│   │   ├── pages/              # Login, Register, Dashboard, Room
+│   │   ├── services/           # Axios API layer
+│   │   ├── App.jsx             # Routes & auth wrappers
+│   │   └── main.jsx            # Entry point
 │   └── package.json
 │
-└── server/                 # Node.js backend
-    ├── src/
-    │   ├── controllers/   # Route controllers
-    │   ├── models/        # MongoDB models
-    │   ├── routes/        # API routes
-    │   ├── socket/        # Socket.io handlers
-    │   ├── middleware/    # Auth middleware
-    │   └── index.js       # Server entry point
-    └── package.json
+├── server/                     # Node.js + Express backend
+│   ├── src/
+│   │   ├── controllers/        # auth, room, code controllers
+│   │   ├── middleware/          # JWT auth middleware
+│   │   ├── model/              # Mongoose schemas (user, room, message)
+│   │   ├── routes/             # auth & room routes
+│   │   ├── socket/             # Socket.io handlers (room, code, chat)
+│   │   ├── lib/                # DB connection
+│   │   └── index.js            # Server entry point
+│   └── package.json
+│
+├── SETUP.md                    # Quick setup guide
+├── CODE_EXECUTION_EXPLAINED.md # How code execution works
+└── README.md
 ```
 
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login user
-- `DELETE /api/auth/logout` - Logout user
+
+| Method | Endpoint             | Description                   | Auth |
+| ------ | -------------------- | ----------------------------- | ---- |
+| POST   | `/api/auth/register` | Register a new user           | No   |
+| POST   | `/api/auth/login`    | Login and receive JWT cookie  | No   |
+| DELETE | `/api/auth/logout`   | Logout and clear cookie       | Yes  |
+| GET    | `/api/auth/me`       | Check auth / get current user | Yes  |
 
 ### Rooms
-- `GET /api/room/roomsforuser` - Get user's rooms (requires auth)
-- `POST /api/room/createRoom` - Create a new room (requires auth)
-- `POST /api/room/joinRoom/:roomCode` - Join a room (requires auth)
-- `PATCH /api/room/leaveRoom/:roomCode` - Leave a room (requires auth)
-- `GET /api/room/inaroom/:roomId` - Get room details (requires auth)
-- `POST /api/room/execute` - Execute code (requires auth)
-- `POST /api/room/ai-recommendations` - Get AI code recommendations (requires auth)
+
+| Method | Endpoint                         | Description                 | Auth |
+| ------ | -------------------------------- | --------------------------- | ---- |
+| GET    | `/api/room/roomsforuser`         | Get all rooms for user      | Yes  |
+| POST   | `/api/room/createRoom`           | Create a new room           | Yes  |
+| POST   | `/api/room/joinRoom/:roomCode`   | Join a room by code         | Yes  |
+| PATCH  | `/api/room/leaveRoom/:roomCode`  | Leave a room                | Yes  |
+| GET    | `/api/room/inaroom/:roomId`      | Get room details            | Yes  |
+| DELETE | `/api/room/deleteRoom/:roomCode` | Delete a room (admin only)  | Yes  |
+| POST   | `/api/room/execute`              | Execute code                | Yes  |
+| POST   | `/api/room/ai-recommendations`   | Get AI code recommendations | Yes  |
+
+### Messages
+
+| Method | Endpoint                     | Description       | Auth |
+| ------ | ---------------------------- | ----------------- | ---- |
+| GET    | `/api/room/messages/:roomId` | Get room messages | Yes  |
+| POST   | `/api/room/messages/:roomId` | Save a message    | Yes  |
 
 ## Socket Events
 
-### Client to Server
-- `join-room` - Join a room
-- `code-change` - Send code changes
-- `language-change` - Change programming language
-- `sendMessage` - Send chat message
-- `leaving` - Leave room notification
+### Client → Server
 
-### Server to Client
-- `receive-message` - Receive chat message
-- `code-update` - Receive code updates
-- `language-update` - Receive language changes
-- `request-info` - Request room state
-- `accept-info` - Receive room state
+| Event             | Payload                        | Description           |
+| ----------------- | ------------------------------ | --------------------- |
+| `join-room`       | `{ roomId, username }`         | Join a room           |
+| `code-change`     | `{ roomId, code }`             | Send code changes     |
+| `language-change` | `{ roomId, language }`         | Change language       |
+| `title-change`    | `{ roomId, title }`            | Change room title     |
+| `sendMessage`     | `{ room, message, sender }`    | Send chat message     |
+| `typing-start`    | `{ roomId, username }`         | Notify typing started |
+| `typing-stop`     | `{ roomId, username }`         | Notify typing stopped |
+| `cursor-change`   | `{ roomId, cursor, username }` | Share cursor position |
+| `leaving`         | `{ roomId, username }`         | Leave room            |
 
-## Technologies Used
+### Server → Client
+
+| Event             | Payload                          | Description                |
+| ----------------- | -------------------------------- | -------------------------- |
+| `code-update`     | `code`                           | Receive code changes       |
+| `language-update` | `language`                       | Receive language change    |
+| `title-update`    | `title`                          | Receive title change       |
+| `receive-message` | `{ sender, message, timestamp }` | Receive chat message       |
+| `online-users`    | `[{ username, socketId }]`       | Updated online users list  |
+| `user-typing`     | `{ username, isTyping }`         | Typing indicator update    |
+| `cursor-update`   | `{ username, cursor }`           | Cursor position update     |
+| `request-info`    | —                                | Request current room state |
+| `accept-info`     | `{ code, language }`             | Receive room state         |
+
+## Technologies
 
 ### Frontend
-- React 18
-- React Router DOM
-- Socket.io Client
-- Axios
-- Monaco Editor (VS Code editor)
-- Vite
+
+- **React 18** with hooks and context
+- **React Router DOM** for routing
+- **Monaco Editor** (@monaco-editor/react) — VS Code in the browser
+- **Socket.io Client** for real-time communication
+- **Axios** for HTTP requests
+- **Vite** for fast development and builds
 
 ### Backend
-- Node.js
-- Express.js
-- Socket.io
-- MongoDB (Mongoose)
-- JWT Authentication
-- bcryptjs
-- Child Process (for code execution)
-- OpenAI API (optional, for AI recommendations)
+
+- **Node.js** + **Express.js** REST API
+- **Socket.io** for WebSocket communication
+- **MongoDB** with **Mongoose** ODM
+- **JWT** (jsonwebtoken) for authentication
+- **bcryptjs** for password hashing
+- **child_process** for code execution sandboxing
+- **OpenAI API** (optional) for AI recommendations
+- **uuid** for unique room codes
+
+## Environment Variables
+
+### Server (`server/.env`)
+
+| Variable       | Required | Description                                            |
+| -------------- | -------- | ------------------------------------------------------ |
+| PORT           | No       | Server port (default: 5000)                            |
+| MONGODB_URI    | Yes      | MongoDB connection string                              |
+| JWT_SECRET     | Yes      | Secret key for JWT signing                             |
+| CLIENT_URL     | No       | Frontend URL for CORS (default: http://localhost:5173) |
+| OPENAI_API_KEY | No       | OpenAI API key for AI recommendations                  |
+
+### Client (`client/.env`)
+
+| Variable     | Required | Description                                  |
+| ------------ | -------- | -------------------------------------------- |
+| VITE_API_URL | No       | Backend URL (default: http://localhost:5000) |
 
 ## Notes
 
-- Make sure MongoDB is running before starting the backend
-- The backend uses cookies for authentication, so CORS is configured to allow credentials
-- Socket.io is configured to work with the frontend on port 5173 (Vite default)
-- **Code Execution Requirements:**
-  - Node.js must be installed for JavaScript execution
-  - Python must be installed for Python execution
-  - Java JDK must be installed for Java execution
-  - GCC/G++ must be installed for C/C++ execution
-- **AI Recommendations:**
-  - Requires OpenAI API key in `.env` file (optional)
-  - Without API key, basic recommendations are shown
-  - Uses GPT-3.5-turbo model
+- MongoDB must be running before starting the backend
+- Authentication uses HTTP-only cookies — ensure CORS credentials are enabled
+- The `CLIENT_URL` env variable allows deploying frontend and backend on different domains
+- Code execution runs on the server with a 10-second timeout per execution
+- AI recommendations require an OpenAI API key; without it, basic tips are shown
+- All socket rooms are tracked with online user counts for real-time presence
 
 ## License
 
 ISC
-

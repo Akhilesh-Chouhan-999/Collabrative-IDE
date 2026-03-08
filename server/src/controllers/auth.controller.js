@@ -7,8 +7,7 @@ export const authRegister = async (req, res) => {
 
     const { username, email, password } = req.body;
 
-    if (!username || !email || !password)
-       {
+    if (!username || !email || !password) {
       return res
         .status(422)
         .json({
@@ -67,7 +66,7 @@ export const authLogin = async (req, res) => {
 
   try {
 
-    const { username , password } = req.body;
+    const { username, password } = req.body;
 
     if (!username || !password) {
       return res
@@ -126,35 +125,55 @@ export const authLogin = async (req, res) => {
   }
 };
 
-export const authLogout = async (req , res) => {
-    
+export const authLogout = async (req, res) => {
+
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      path : '/' ,
+      path: '/',
       sameSite: "strict"
     });
 
     return res
-               .status(200)
-               .json({ 
-                 success: true, 
-                 message: "Logged out successfully" 
-                 });
+      .status(200)
+      .json({
+        success: true,
+        message: "Logged out successfully"
+      });
 
 
-  } 
-  
-  catch (error) 
-  {
+  }
+
+  catch (error) {
     console.error("Error in logout: ", error);
 
     res
-       .status(500)
-       .json({ 
-        success: false, 
-        message: "Server error during logout" 
-    });
+      .status(500)
+      .json({
+        success: false,
+        message: "Server error during logout"
+      });
   }
 }
+
+// Check if user is authenticated (for session persistence)
+export const checkAuth = async (req, res) => {
+  try {
+    const user = req.rootUser;
+    return res.status(200).json({
+      success: true,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Error in checkAuth:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during auth check",
+    });
+  }
+};
 

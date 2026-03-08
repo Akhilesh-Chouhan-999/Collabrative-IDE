@@ -1,12 +1,12 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../services/api';
+import { createContext, useContext, useState, useEffect } from "react";
+import { authAPI } from "../services/api";
 
 const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -16,27 +16,30 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in by trying to get rooms
-    const checkAuth = async () => {
-      try {
-        // We'll check auth status when needed
-        setLoading(false);
-      } catch (error) {
-        setUser(null);
-        setLoading(false);
-      }
-    };
     checkAuth();
   }, []);
+
+  const checkAuth = async () => {
+    try {
+      const response = await authAPI.checkAuth();
+      if (response.success) {
+        setUser(response.user);
+      }
+    } catch {
+      setUser(null);
+      localStorage.removeItem("token");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = async (username, password) => {
     try {
       const response = await authAPI.login(username, password);
       if (response.success) {
         setUser(response.user);
-        // Store token in localStorage for persistence
         if (response.token) {
-          localStorage.setItem('token', response.token);
+          localStorage.setItem("token", response.token);
         }
         return { success: true };
       }
@@ -44,7 +47,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Login failed',
+        message: error.response?.data?.message || "Login failed",
       };
     }
   };
@@ -59,7 +62,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.message || 'Registration failed',
+        message: error.response?.data?.message || "Registration failed",
       };
     }
   };
@@ -67,15 +70,13 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await authAPI.logout();
-      setUser(null);
-      localStorage.removeItem('token');
-      return { success: true };
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
+    } finally {
       setUser(null);
-      localStorage.removeItem('token');
-      return { success: true }; // Clear user even if API call fails
+      localStorage.removeItem("token");
     }
+    return { success: true };
   };
 
   const value = {
@@ -84,8 +85,8 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     loading,
+    isAuthenticated: !!user,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-

@@ -44,8 +44,8 @@ export const executeCode = async (req, res) => {
         filename = `Code_${timestamp}_${randomId}.java`;
         const className = `Code_${timestamp}_${randomId}`;
         // Java requires class name to match filename
-        const javaCode = code.includes('class ') 
-          ? code 
+        const javaCode = code.includes('class ')
+          ? code
           : `public class ${className} {\n    public static void main(String[] args) {\n        ${code}\n    }\n}`;
         fs.writeFileSync(path.join(tempDir, filename), javaCode);
         const compileCommand = `javac ${filename}`;
@@ -76,10 +76,12 @@ export const executeCode = async (req, res) => {
         fs.writeFileSync(path.join(tempDir, filename), code);
         try {
           await execAsync(`g++ ${filename} -o ${cppOutput}`, { cwd: tempDir, timeout: 10000 });
-          const { stdout, stderr } = await execAsync(`./${cppOutput}`, { cwd: tempDir, timeout: 10000 });
+          const cppExe = process.platform === 'win32' ? `${cppOutput}.exe` : `./${cppOutput}`;
+          const { stdout, stderr } = await execAsync(cppExe, { cwd: tempDir, timeout: 10000 });
           // Cleanup
           fs.unlinkSync(path.join(tempDir, filename));
-          fs.unlinkSync(path.join(tempDir, cppOutput));
+          const cppBin = process.platform === 'win32' ? `${cppOutput}.exe` : cppOutput;
+          if (fs.existsSync(path.join(tempDir, cppBin))) fs.unlinkSync(path.join(tempDir, cppBin));
           return res.status(200).json({
             success: true,
             output: stdout || stderr || 'Code executed successfully',
@@ -100,10 +102,12 @@ export const executeCode = async (req, res) => {
         fs.writeFileSync(path.join(tempDir, filename), code);
         try {
           await execAsync(`gcc ${filename} -o ${cOutput}`, { cwd: tempDir, timeout: 10000 });
-          const { stdout, stderr } = await execAsync(`./${cOutput}`, { cwd: tempDir, timeout: 10000 });
+          const cExe = process.platform === 'win32' ? `${cOutput}.exe` : `./${cOutput}`;
+          const { stdout, stderr } = await execAsync(cExe, { cwd: tempDir, timeout: 10000 });
           // Cleanup
           fs.unlinkSync(path.join(tempDir, filename));
-          fs.unlinkSync(path.join(tempDir, cOutput));
+          const cBin = process.platform === 'win32' ? `${cOutput}.exe` : cOutput;
+          if (fs.existsSync(path.join(tempDir, cBin))) fs.unlinkSync(path.join(tempDir, cBin));
           return res.status(200).json({
             success: true,
             output: stdout || stderr || 'Code executed successfully',
@@ -176,7 +180,7 @@ export const getAIRecommendations = async (req, res) => {
 
     // Check if OpenAI API key is configured
     const openaiApiKey = process.env.OPENAI_API_KEY;
-    
+
     if (!openaiApiKey) {
       // Return basic recommendations without AI
       return res.status(200).json({
@@ -231,7 +235,7 @@ Format your response as JSON with an array of recommendations, each with: type (
       );
 
       const aiResponse = response.data.choices[0].message.content;
-      
+
       // Try to parse JSON response
       let recommendations = [];
       try {
@@ -264,7 +268,7 @@ Format your response as JSON with an array of recommendations, each with: type (
       });
     } catch (openaiError) {
       console.error('OpenAI API error:', openaiError.response?.data || openaiError.message);
-      
+
       return res.status(200).json({
         success: true,
         recommendations: [

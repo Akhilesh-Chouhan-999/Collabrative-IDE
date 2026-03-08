@@ -3,23 +3,26 @@ import handleRoomEvents from "./room.js";
 import handleCodeEvents from "./code.js";
 import handleChatEvents from "./chat.js";
 
-export default function setupSocket(httpServer)
-{
+export default function setupSocket(httpServer) {
+  const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:8000",
+    "http://localhost:7000" ,
+        "http://localhost:5174",
+    process.env.CLIENT_URL,
+  ].filter(Boolean);
 
-     const io = new Server(httpServer, {
-
+  const io = new Server(httpServer, {
     cors: {
-      origin: ["http://localhost:5173", "http://localhost:3000"],
+      origin: allowedOrigins,
       methods: ["GET", "POST"],
       credentials: true,
     },
   });
 
-  io.on('connection' , socket =>
-  {
+  io.on('connection', (socket) => {
+    console.log(`User connected: ${socket.id}`);
 
-    console.log(`User connected: ${socket.id}`) ;
-    
     handleRoomEvents(io, socket);
     handleCodeEvents(io, socket);
     handleChatEvents(io, socket);
@@ -27,7 +30,7 @@ export default function setupSocket(httpServer)
     socket.on("disconnect", () => {
       console.log(`User disconnected: ${socket.id}`);
     });
-  }
-  )
-      
+  });
+
+  return io;
 }
